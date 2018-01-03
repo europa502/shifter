@@ -18,7 +18,7 @@ imagepath=$2
 
 shifter_path="\/usr\/share\/shifter\/image.jpg"
 
-mkdir -p /usr/share/shifter/shifter/
+mkdir -p /usr/share/shifter/
 cp $imagepath /usr/share/shifter/image.jpg
  
 if [ ! -f " /boot/grub/grubcopy.cfg " ] ; then
