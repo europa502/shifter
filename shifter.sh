@@ -14,18 +14,22 @@ echo ""
 echo ""
 
 option=$1
- imagepath=$2
- 
+echo $option
+
+echo $imagepath
+
 if [ " $option " = ' -b ' ] || [ " $option " = ' --change-boot-background ' ] ; then
 
+	imagepath=$2
 	if [ -z " $imagepath " ] ; then
 		echo $imagepath
 		echo "No image path specified "
 		exit 2	
 	fi
 	shifter_path="\/usr\/share\/shifter\/image.jpg"
-	mkdir -p /usr/share/shifter/shifter/
-	cp $imagepath /usr/share/shifter/image.jpg
+	mkdir -p /usr/share/shifter/
+	magick convert $imagepath -depth 8 -colorspace RGB /usr/share/shifter/image.jpg
+ 	#cp $imagepath /usr/share/shifter/image.jpg
  
 	if [ ! -f " /boot/grub/grubcopy.cfg " ] ; then
 		cp /boot/grub/grub.cfg /boot/grub/grubcopy.cfg
@@ -41,6 +45,7 @@ if [ " $option " = ' -b ' ] || [ " $option " = ' --change-boot-background ' ] ; 
 	echo "Boot background has been changed. Cheers!!"
 
 elif [[ " $option " = ' -d ' ]] || [[ " $option " = ' --change-desktop-background ' ]] ; then
+	imagepath=$2	
 	if [ -z " $imagepath " ] ; then
 		echo $imagepath
 		echo "No image path specified "
@@ -49,12 +54,35 @@ elif [[ " $option " = ' -d ' ]] || [[ " $option " = ' --change-desktop-backgroun
 	gsettings set org.gnome.desktop.background picture-uri file://$imagepath
 	echo "Desktop background has been changed"
 
-elif [ " $option " = ' -h ' ] || [ " $option " = ' --help ' ] ; then
+elif [[ " $option " = ' -r ' ]] || [[ " $option " = ' --reset ' ]] ; then
+	
+	update-grub 
+
+elif [[ " $option " = ' -i ' ]] || [[ " $option " = ' --install ' ]] ; then
+
+		if [ ! -f " /usr/share/shifter/ " ] ; then
+			echo "Installing packages - build-essential, checkinstall, libx11-dev, libxext-dev, zlib1g-dev, libpng12-dev, libjpeg-dev, libfreetype6-dev, libxml2-dev "
+			sudo apt-get install build-essential checkinstall libx11-dev libxext-dev zlib1g-dev libpng12-dev libjpeg-dev libfreetype6-dev libxml2-dev
+
+			echo "Setting up ImageMagick..."
+			echo "It might take a while.... Go have a cup of tea, or ... coffee or.. anything..... "
+			tar xvzf ImageMagick.tar.gz			
+			cd ImageMagick-7.0.7-19
+			./configure
+			make
+			sudo make install
+			sudo ldconfig /usr/local/lib
+			/usr/local/bin/convert logo: logo.gif
+			make check
+			echo "Completed Installation."	
+
+elif [[ " $option " = ' -h ' ]] || [[ " $option " = ' --help ' ]] ; then
  	
 	echo "Usage - bash ./shifter.sh [option] [imagepath]  "
 	echo "Options-  "
 	echo "	-b	--change-boot-backround 	- To change the boot background "
 	echo "	-d	--change-desktop-background	- To change desktop background "
+	echo "	-r	--reset				- To reset grub config file to the default condition "
 
 else 
  	
