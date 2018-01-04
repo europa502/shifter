@@ -14,26 +14,23 @@ echo ""
 echo ""
 
 option=$1
-imagepath=$2
-
-shifter_path="\/usr\/share\/shifter\/image.jpg"
-
-mkdir -p /usr/share/shifter/
-cp $imagepath /usr/share/shifter/image.jpg
+ imagepath=$2
  
-if [ ! -f " /boot/grub/grubcopy.cfg " ] ; then
-	cp /boot/grub/grub.cfg /boot/grub/grubcopy.cfg
+if [ " $option " = ' -b ' ] || [ " $option " = ' --change-boot-background ' ] ; then
 
-fi
-
-if [ " $option " = ' -c ' ] || [ " $option " = ' --change-background ' ] ; then
 	if [ -z " $imagepath " ] ; then
 		echo $imagepath
 		echo "No image path specified "
 		exit 2	
 	fi
-	
+	shifter_path="\/usr\/share\/shifter\/image.jpg"
+	mkdir -p /usr/share/shifter/shifter/
+	cp $imagepath /usr/share/shifter/image.jpg
+ 
+	if [ ! -f " /boot/grub/grubcopy.cfg " ] ; then
+		cp /boot/grub/grub.cfg /boot/grub/grubcopy.cfg
 
+	fi
 	line=`grep -n -r "background_image" "/boot/grub/grub.cfg"`
 	lineno=${line%:*}  #take out the line number from string 
 	lineno=$lineno's'
@@ -41,18 +38,28 @@ if [ " $option " = ' -c ' ] || [ " $option " = ' --change-background ' ] ; then
 	firsttxt=${linetext% /*} #read the chars before the image path 
 	lasttxt=${linetext##*;}
 	sed -i "$lineno/.*/$firsttxt $shifter_path;$lasttxt/" /boot/grub/grub.cfg
+	echo "Boot background has been changed. Cheers!!"
 
+elif [[ " $option " = ' -d ' ]] || [[ " $option " = ' --change-desktop-background ' ]] ; then
+	if [ -z " $imagepath " ] ; then
+		echo $imagepath
+		echo "No image path specified "
 
-else if [ " $option " = ' -h ' ] || [ " $option " = ' --help ' ] ; then
+	fi
+	gsettings set org.gnome.desktop.background picture-uri file://$imagepath
+	echo "Desktop background has been changed"
+
+elif [ " $option " = ' -h ' ] || [ " $option " = ' --help ' ] ; then
  	
 	echo "Usage - bash ./shifter.sh [option] [imagepath]  "
 	echo "Options-  "
-	echo "-c	--change-backround 	- To change the boot background "
+	echo "	-b	--change-boot-backround 	- To change the boot background "
+	echo "	-d	--change-desktop-background	- To change desktop background "
 
 else 
  	
 	echo "Usage - bash ./shifter.sh [option] [imagepath]  "
+	echo "refer bash ./shifter.sh -h for more options"
 
 
-fi
 fi
