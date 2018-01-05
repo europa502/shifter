@@ -14,9 +14,6 @@ echo ""
 echo ""
 
 option=$1
-echo $option
-
-echo $imagepath
 
 if [ " $option " = ' -b ' ] || [ " $option " = ' --change-boot-background ' ] ; then
 
@@ -28,8 +25,7 @@ if [ " $option " = ' -b ' ] || [ " $option " = ' --change-boot-background ' ] ; 
 	fi
 	shifter_path="\/usr\/share\/shifter\/image.jpg"
 	mkdir -p /usr/share/shifter/
-	magick convert $imagepath -depth 8 -colorspace RGB /usr/share/shifter/image.jpg
- 	#cp $imagepath /usr/share/shifter/image.jpg
+	magick convert $imagepath -depth 8 -colorspace RGB /usr/share/shifter/image.png
  
 	if [ ! -f " /boot/grub/grubcopy.cfg " ] ; then
 		cp /boot/grub/grub.cfg /boot/grub/grubcopy.cfg
@@ -65,7 +61,7 @@ elif [[ " $option " = ' -i ' ]] || [[ " $option " = ' --install ' ]] ; then
 			sudo apt-get install build-essential checkinstall libx11-dev libxext-dev zlib1g-dev libpng12-dev libjpeg-dev libfreetype6-dev libxml2-dev
 
 			echo "Setting up ImageMagick..."
-			echo "It might take a while.... Go have a cup of tea, or ... coffee or.. anything..... "
+			echo "It might take a while.... Go have a cup of tea, or... coffee or... anything..... "
 			tar xvzf ImageMagick.tar.gz			
 			cd ImageMagick-7.0.7-19
 			./configure
@@ -74,7 +70,10 @@ elif [[ " $option " = ' -i ' ]] || [[ " $option " = ' --install ' ]] ; then
 			sudo ldconfig /usr/local/lib
 			/usr/local/bin/convert logo: logo.gif
 			make check
-			echo "Completed Installation."	
+			echo "Completed Installation."
+		else echo "install  build-essential, checkinstall, libx11-dev, libxext-dev, zlib1g-dev, libpng12-dev, libjpeg-dev, libfreetype6-dev, libxml2-dev and ImageMagick-7.0.7-19 manually"
+		fi
+			
 
 elif [[ " $option " = ' -h ' ]] || [[ " $option " = ' --help ' ]] ; then
  	
@@ -82,7 +81,7 @@ elif [[ " $option " = ' -h ' ]] || [[ " $option " = ' --help ' ]] ; then
 	echo "Options-  "
 	echo "	-b	--change-boot-backround 	- To change the boot background "
 	echo "	-d	--change-desktop-background	- To change desktop background "
-	echo "	-r	--reset				- To reset grub config file to the default condition "
+	echo "  -r 	--reset				- To reset grub configurations "
 
 else 
  	
